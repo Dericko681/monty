@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "monty.h"
+
+ssize_t getline(char **lineptr, size_t *n, FILE *stream);
+
 
 /* Global variable for Monty byte code token */
 char *monty_token;
@@ -42,7 +46,7 @@ int main(int argc, char *argv[])
         /* Add more task-specific conditions as needed */
 
         /* Reset monty_token for the next iteration */
-        monty_token = strtok(monty_token, " \n\t\r");
+        monty_token = strtok(NULL, " \n\t\r");
     }
 
     /* Close the file and free memory */
