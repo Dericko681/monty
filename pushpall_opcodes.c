@@ -1,40 +1,74 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "monty.h"
 
-#define STACK_SIZE 100
-
-int stack[STACK_SIZE];
-int top = -1;  // Initialize the stack top
-
-// Function to push an element onto the stack
-void push(int value) {
-    if (top == STACK_SIZE - 1) {
-        fprintf(stderr, "Error: Stack overflow\n");
+/**
+ * push - Pushes an element onto the stack.
+ * @stack: Pointer to the stack.
+ * @line_number: Line number in the Monty byte code file.
+ */
+void push(stack_t **stack, unsigned int line_number)
+{
+    /* Check if the argument is provided */
+    if (!stack || !line_number)
+    {
+        fprintf(stderr, "L%u: usage: push integer\n", line_number);
         exit(EXIT_FAILURE);
     }
-    stack[++top] = value;
+
+    /* Allocate memory for a new stack node */
+    stack_t *new_node = malloc(sizeof(stack_t));
+    if (!new_node)
+    {
+        fprintf(stderr, "Error: malloc failed\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Check if the argument is an integer */
+    if (!isdigit(*monty_token))
+    {
+        fprintf(stderr, "L%u: usage: push integer\n", line_number);
+        free(new_node);
+        exit(EXIT_FAILURE);
+    }
+
+    /* Convert the argument to an integer and assign it to the new node */
+    new_node->n = atoi(monty_token);
+    new_node->prev = NULL;
+
+    /* Update the stack pointers */
+    if (*stack)
+    {
+        new_node->next = *stack;
+        (*stack)->prev = new_node;
+    }
+    else
+    {
+        new_node->next = NULL;
+    }
+
+    *stack = new_node;
 }
 
-// Function to print all values on the stack
-void pall() {
-    if (top == -1) {
-        // Stack is empty, nothing to print
+/**
+ * pall - Prints all the values on the stack.
+ * @stack: Pointer to the stack.
+ * @line_number: Line number in the Monty byte code file.
+ */
+void pall(stack_t **stack, unsigned int line_number)
+{
+    (void)line_number; /* Unused parameter */
+
+    /* Check if the stack is empty */
+    if (!stack || !(*stack))
         return;
-    }
-    
-    int i;
-    for (i = top; i >= 0; i--) {
-        printf("%d\n", stack[i]);
+
+    /* Print all the values on the stack */
+    stack_t *current = *stack;
+    while (current)
+    {
+        printf("%d\n", current->n);
+        current = current->next;
     }
 }
 
-int main() {
-    // Example usage
-    push(10);
-    push(20);
-    push(30);
-
-    pall();  // Should print 30, 20, 10
-
-    return 0;
-}
