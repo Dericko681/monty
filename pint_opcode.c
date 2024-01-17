@@ -19,3 +19,4 @@ void pint(stack_t **stack, unsigned int line_number)
     /* Print the value at the top of the stack */
     printf("%d\n", (*stack)->n);
 }
+
