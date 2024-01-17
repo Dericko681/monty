@@ -39,10 +39,6 @@ int main(int argc, char *argv[])
         {
             pall(&stack, line_number);
         }
-        else if (strcmp(monty_token, "pint") == 0)
-        {
-            pint(&stack, line_number);
-        }
         /* Add more task-specific conditions as needed */
 
         /* Reset monty_token for the next iteration */
@@ -56,3 +52,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+

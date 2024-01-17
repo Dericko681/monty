@@ -2,73 +2,54 @@
 #include <stdlib.h>
 #include "monty.h"
 
-/**
- * push - Pushes an element onto the stack.
- * @stack: Pointer to the stack.
- * @line_number: Line number in the Monty byte code file.
- */
-void push(stack_t **stack, unsigned int line_number)
+/* Global variable for Monty byte code token */
+char *monty_token;
+
+int main(int argc, char *argv[])
 {
-    /* Check if the argument is provided */
-    if (!stack || !line_number)
+    if (argc != 2)
     {
-        fprintf(stderr, "L%u: usage: push integer\n", line_number);
+        fprintf(stderr, "USAGE: monty file\n");
         exit(EXIT_FAILURE);
     }
 
-    /* Allocate memory for a new stack node */
-    stack_t *new_node = malloc(sizeof(stack_t));
-    if (!new_node)
+    /* Open the Monty byte code file */
+    FILE *file = fopen(argv[1], "r");
+    if (!file)
     {
-        fprintf(stderr, "Error: malloc failed\n");
+        fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
         exit(EXIT_FAILURE);
     }
 
-    /* Check if the argument is an integer */
-    if (!isdigit(*monty_token))
+    /* Initialize the stack */
+    stack_t *stack = NULL;
+
+    /* Read and execute Monty byte code instructions */
+    unsigned int line_number = 0;
+    while (getline(&monty_token, NULL, file) != -1)
     {
-        fprintf(stderr, "L%u: usage: push integer\n", line_number);
-        free(new_node);
-        exit(EXIT_FAILURE);
+        line_number++;
+
+        /* Execute task based on opcode */
+        if (strcmp(monty_token, "push") == 0)
+        {
+            push(&stack, line_number);
+        }
+        else if (strcmp(monty_token, "pall") == 0)
+        {
+            pall(&stack, line_number);
+        }
+        /* Add more task-specific conditions as needed */
+
+        /* Reset monty_token for the next iteration */
+        monty_token = strtok(monty_token, " \n\t\r");
     }
 
-    /* Convert the argument to an integer and assign it to the new node */
-    new_node->n = atoi(monty_token);
-    new_node->prev = NULL;
+    /* Close the file and free memory */
+    fclose(file);
+    free(monty_token);
+    free_stack(&stack);  /* Assuming you have a function to free the stack */
 
-    /* Update the stack pointers */
-    if (*stack)
-    {
-        new_node->next = *stack;
-        (*stack)->prev = new_node;
-    }
-    else
-    {
-        new_node->next = NULL;
-    }
-
-    *stack = new_node;
-}
-
-/**
- * pall - Prints all the values on the stack.
- * @stack: Pointer to the stack.
- * @line_number: Line number in the Monty byte code file.
- */
-void pall(stack_t **stack, unsigned int line_number)
-{
-    (void)line_number; /* Unused parameter */
-
-    /* Check if the stack is empty */
-    if (!stack || !(*stack))
-        return;
-
-    /* Print all the values on the stack */
-    stack_t *current = *stack;
-    while (current)
-    {
-        printf("%d\n", current->n);
-        current = current->next;
-    }
+    return 0;
 }
 
